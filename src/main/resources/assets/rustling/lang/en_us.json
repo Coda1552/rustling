@@ -1,0 +1,10 @@
+{
+  "itemGroup.rustling": "Rustling",
+
+  "item.rustling.rust": "Rust",
+  "item.rustling.rustling_spawn_egg": "Rustling Spawn Egg",
+
+  "entity.rustling.rustling": "Rustling",
+
+  "block.rustling.rust_block": "Block of Rust"
+}
