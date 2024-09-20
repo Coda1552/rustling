@@ -1,14 +1,11 @@
 package codyhuh.rustling.common.entities;
 
-import codyhuh.rustling.RustlingMod;
 import codyhuh.rustling.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -24,8 +21,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraftforge.common.IForgeShearable;
 import net.minecraftforge.fluids.FluidType;
 import org.jetbrains.annotations.NotNull;
@@ -36,9 +33,6 @@ import java.util.List;
 
 public class Rustling extends Animal implements IForgeShearable, Shearable {
     private static final EntityDataAccessor<Integer> RUST_LEVEL = SynchedEntityData.defineId(Rustling.class, EntityDataSerializers.INT);
-    public static final ResourceLocation RUST_LVL_1 = new ResourceLocation("data/rustling/loot_tables/entities/rust_lvl_1");
-    public static final ResourceLocation RUST_LVL_2 = new ResourceLocation("data/rustling/loot_tables/entities/rust_lvl_2");
-    public static final ResourceLocation RUST_LVL_3 = new ResourceLocation("data/rustling/loot_tables/entities/rust_lvl_3");
     public int increaseRustTime = 6000;
 
     public Rustling(EntityType<? extends Animal> type, Level level) {
@@ -52,6 +46,15 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
     @Override
     public boolean canDrownInFluidType(FluidType type) {
         return type != Fluids.WATER.getFluidType() && type != Fluids.FLOWING_WATER.getFluidType();
+    }
+
+    @Override
+    public boolean hurt(DamageSource source, float p_27568_) {
+        return source != damageSources().sweetBerryBush() && super.hurt(source, p_27568_);
+    }
+
+    @Override
+    protected void checkFallDamage(double p_20990_, boolean p_20991_, BlockState p_20992_, BlockPos p_20993_) {
     }
 
     @Override
@@ -78,29 +81,6 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putInt("RustLevel", getRustLevel());
-    }
-
-    @Override
-    protected ResourceLocation getDefaultLootTable() {
-        ResourceLocation resourcelocation;
-
-        if (getRustLevel() <= 0) {
-            resourcelocation = this.getType().getDefaultLootTable();
-        }
-        else {
-            resourcelocation = RUST_LVL_1;
-
-            for (int j = 0; j < getRustLevel(); j++) {
-                if (j == 1) {
-                    resourcelocation = RUST_LVL_1;
-                } else if (j == 2) {
-                    resourcelocation = RUST_LVL_2;
-                } else if (j == 3) {
-                    resourcelocation = RUST_LVL_3;
-                }
-            }
-        }
-        return resourcelocation;
     }
 
     @Override

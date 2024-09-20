@@ -1,16 +1,18 @@
 {
-  "type": "minecraft:entity",
   "pools": [
     {
       "rolls": 1,
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "rustling:rust",
+          "name": "minecraft:moss_block",
           "functions": [
             {
               "function": "minecraft:set_count",
-              "count": 2
+              "count": {
+                "min": 0,
+                "max": 1
+              }
             }
           ]
         }
