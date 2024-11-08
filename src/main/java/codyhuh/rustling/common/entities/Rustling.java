@@ -1,5 +1,6 @@
 package codyhuh.rustling.common.entities;
 
+import codyhuh.rustling.registry.ModEntities;
 import codyhuh.rustling.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -9,6 +10,8 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
@@ -17,11 +20,14 @@ import net.minecraft.world.entity.Shearable;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.IForgeShearable;
 import net.minecraftforge.fluids.FluidType;
@@ -37,6 +43,7 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
 
     public Rustling(EntityType<? extends Animal> type, Level level) {
         super(type, level);
+        this.setMaxUpStep(1);
     }
 
     public static AttributeSupplier.Builder createRustlingAttributes() {
@@ -87,8 +94,12 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
     public void tick() {
         super.tick();
 
-        if (getRustLevel() < 3 && this.isAlive() && --this.increaseRustTime <= 0 && level().canSeeSky(blockPosition()) && level().isRainingAt(blockPosition())) {
+        if (getRustLevel() < 3 && this.isAlive() && --this.increaseRustTime > 0) {
             --this.increaseRustTime;
+
+            if (level().canSeeSky(blockPosition()) && level().isRainingAt(blockPosition()) && --this.increaseRustTime > 0){
+                --this.increaseRustTime;
+            }
         }
 
         if (getRustLevel() < 3 && this.isAlive() && --this.increaseRustTime <= 0) {
@@ -99,7 +110,42 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
     }
 
     @Override
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        ItemStack itemstack = player.getItemInHand(hand);
+
+        if (itemstack.is(Items.GLOW_BERRIES)){
+            this.duplicateRustling();
+            this.level().broadcastEntityEvent(this, (byte)18);
+            this.level().playSound(player, this, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.NEUTRAL, 2.0F, 1.0F);
+
+            this.removeInteractionItem(player, itemstack);
+            return InteractionResult.SUCCESS;
+        }
+
+        return super.mobInteract(player, hand);
+    }
+
+    private void removeInteractionItem(Player player, ItemStack itemStack) {
+        if (!player.getAbilities().instabuild) {
+            itemStack.shrink(1);
+        }
+    }
+
+    private void duplicateRustling() {
+        Rustling rustling = ModEntities.RUSTLING.get().create(this.level());
+        if (rustling != null) {
+            rustling.moveTo(this.position());
+            rustling.setRustLevel(0);
+            this.level().addFreshEntity(rustling);
+        }
+
+    }
+
+    @Override
     public @NotNull List<ItemStack> onSheared(@Nullable Player player, @NotNull ItemStack item, Level level, BlockPos pos, int fortune) {
+        level.playSound(null, this, SoundEvents.AXE_SCRAPE, player == null ? SoundSource.BLOCKS : SoundSource.PLAYERS, 1.0F, 1.0F);
+        this.gameEvent(GameEvent.SHEAR, player);
+
         List<ItemStack> items = new ArrayList<>(List.of());
 
         items.add(new ItemStack(ModItems.RUST.get(), getRustLevel() * 2));
@@ -121,14 +167,16 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
 
     @Override
     public void shear(SoundSource soundSource) {
+
         this.level().playSound(null, this, SoundEvents.AXE_SCRAPE, soundSource, 1.0F, 1.0F);
-        this.setRustLevel(0);
 
         ItemEntity itementity = spawnAtLocation(new ItemStack(ModItems.RUST.get(), getRustLevel() * 2));
         if (itementity != null) {
             itementity.moveTo(position());
             itementity.setDeltaMovement(itementity.getDeltaMovement().add(((this.random.nextFloat() - this.random.nextFloat()) * 0.1F), (this.random.nextFloat() * 0.05F), ((this.random.nextFloat() - this.random.nextFloat()) * 0.1F)));
         }
+
+        this.setRustLevel(0);
     }
 
     @Override
