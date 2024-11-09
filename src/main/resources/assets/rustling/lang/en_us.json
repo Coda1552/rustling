@@ -6,5 +6,7 @@
 
   "entity.rustling.rustling": "Rustling",
 
-  "block.rustling.rust_block": "Block of Rust"
+  "block.rustling.rust_block": "Block of Rust",
+
+  "effect.rustling.tetanus": "Tetanus"
 }
