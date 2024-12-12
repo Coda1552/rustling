@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "codyhuh.rustling.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "rustling.refmap.json",
+  "mixins": [
+    "FallingBlockEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,16 +1,9 @@
 package codyhuh.rustling.common.effects;
 
-import codyhuh.rustling.registry.ModEffects;
-import com.google.common.collect.Maps;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.*;
-import org.joml.Random;
-
-import java.util.Map;
 import java.util.UUID;
 
 public class TetanusEffect extends MobEffect {
@@ -49,7 +42,6 @@ public class TetanusEffect extends MobEffect {
             }else {
                 attributeinstance.addTransientModifier(new AttributeModifier(SLOW_UUID, "Tetanus slow",
                         -0.025f, AttributeModifier.Operation.ADDITION));
-
             }
         }
 
@@ -58,9 +50,7 @@ public class TetanusEffect extends MobEffect {
 
     @Override
     public boolean isDurationEffectTick(int pDuration, int pAmplifier) {
-
         return pDuration > 0;
-
     }
 
     protected void removeSpeedModifier(LivingEntity living) {

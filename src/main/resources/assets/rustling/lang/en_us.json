@@ -2,11 +2,25 @@
   "itemGroup.rustling": "Rustling",
 
   "item.rustling.rust": "Rust",
-  "item.rustling.rustling_spawn_egg": "Rustling Spawn Egg",
 
+  "item.rustling.rustling_spawn_egg": "Rustling Spawn Egg",
   "entity.rustling.rustling": "Rustling",
 
   "block.rustling.rust_block": "Block of Rust",
 
-  "effect.rustling.tetanus": "Tetanus"
+  "effect.rustling.tetanus": "Tetanus",
+
+  "item.minecraft.potion.effect.tetanus_potion": "Potion of Tetanus",
+  "item.minecraft.splash_potion.effect.tetanus_potion": "Splash Potion of Tetanus",
+  "item.minecraft.lingering_potion.effect.tetanus_potion": "Lingering Potion of Tetanus",
+  "item.minecraft.tipped_arrow.effect.tetanus_potion": "Arrow of Tetanus",
+  "item.minecraft.potion.effect.tetanus_potion_2": "Potion of Tetanus",
+  "item.minecraft.splash_potion.effect.tetanus_potion_2": "Splash Potion of Tetanus",
+  "item.minecraft.lingering_potion.effect.tetanus_potion_2": "Lingering Potion of Tetanus",
+  "item.minecraft.tipped_arrow.effect.tetanus_potion_2": "Arrow of Tetanus",
+
+  "block.rustling.rusticle": "Rusticle",
+
+  "item.rustling.rustmuncher_spawn_egg": "Rustmuncher Spawn Egg",
+  "entity.rustling.rustmuncher": "Rustmuncher"
 }

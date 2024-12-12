@@ -1,0 +1,6 @@
+{
+  "parent": "rustling:block/rusticle",
+  "textures": {
+    "cross": "rustling:block/rusticle_down_middle"
+  }
+}

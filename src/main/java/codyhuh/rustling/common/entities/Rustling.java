@@ -1,5 +1,6 @@
 package codyhuh.rustling.common.entities;
 
+import codyhuh.rustling.registry.ModEffects;
 import codyhuh.rustling.registry.ModEntities;
 import codyhuh.rustling.registry.ModItems;
 import net.minecraft.core.BlockPos;
@@ -13,6 +14,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -20,7 +23,6 @@ import net.minecraft.world.entity.Shearable;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -39,11 +41,13 @@ import java.util.List;
 
 public class Rustling extends Animal implements IForgeShearable, Shearable {
     private static final EntityDataAccessor<Integer> RUST_LEVEL = SynchedEntityData.defineId(Rustling.class, EntityDataSerializers.INT);
-    public int increaseRustTime = 6000;
+    private int increaseRustTime;
+    private int attackedByPlayerTime;
 
     public Rustling(EntityType<? extends Animal> type, Level level) {
         super(type, level);
         this.setMaxUpStep(1);
+        this.increaseRustTime = random.nextInt(6000) + (2000);
     }
 
     public static AttributeSupplier.Builder createRustlingAttributes() {
@@ -57,6 +61,9 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
 
     @Override
     public boolean hurt(DamageSource source, float p_27568_) {
+        if (source.is(DamageTypes.PLAYER_ATTACK)){
+            this.attackedByPlayerTime = 60*20;
+        }
         return source != damageSources().sweetBerryBush() && super.hurt(source, p_27568_);
     }
 
@@ -78,6 +85,10 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
         this.entityData.set(RUST_LEVEL, rustLevel);
     }
 
+    public int getAttackedByPlayerTime(){
+        return this.attackedByPlayerTime;
+    }
+
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
@@ -90,22 +101,31 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
         tag.putInt("RustLevel", getRustLevel());
     }
 
-    @Override
-    public void tick() {
-        super.tick();
+//    @Override
+//    public void tick() {
+//        super.tick();
+//    }
 
-        if (getRustLevel() < 3 && this.isAlive() && --this.increaseRustTime > 0) {
+    @Override
+    public void aiStep() {
+        super.aiStep();
+
+        if (this.attackedByPlayerTime >0){
+            --this.attackedByPlayerTime;
+        }
+
+        if (getRustLevel() < 3 && this.isAlive() && this.increaseRustTime > 0) {
             --this.increaseRustTime;
 
-            if (level().canSeeSky(blockPosition()) && level().isRainingAt(blockPosition()) && --this.increaseRustTime > 0){
+            if (level().canSeeSky(blockPosition()) && level().isRainingAt(blockPosition()) && this.increaseRustTime > 0){
                 --this.increaseRustTime;
             }
         }
 
-        if (getRustLevel() < 3 && this.isAlive() && --this.increaseRustTime <= 0) {
+        if (getRustLevel() < 3 && this.isAlive() && this.increaseRustTime == 0) {
             this.playSound(SoundEvents.AXE_SCRAPE, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
             this.setRustLevel(getRustLevel() + 1);
-            this.increaseRustTime = 6000;
+            this.increaseRustTime = random.nextInt(6000) + (2000);
         }
     }
 
@@ -181,6 +201,11 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
 
     @Override
     public boolean readyForShearing() {
-        return this.isAlive() && getRustLevel() > 0;
+        return this.isAlive() && this.getRustLevel() > 0;
+    }
+
+
+    public boolean canBeAffected(MobEffectInstance pPotioneffect) {
+        return pPotioneffect.getEffect() == ModEffects.TETANUS.get() ? false : super.canBeAffected(pPotioneffect);
     }
 }
