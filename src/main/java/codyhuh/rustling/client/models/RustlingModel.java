@@ -48,9 +48,12 @@ public class RustlingModel<T extends Rustling> extends EntityModel<T> {
 	public void setupAnim(Rustling pEntity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		Entity entity = Minecraft.getInstance().getCameraEntity();
 
-		this.head.yScale = (float) (1.025 + Math.sin((ageInTicks*0.125F / (pEntity.getRustLevel() + 1))) * 0.025);
+		if (pEntity.getRustLevel()<3) {
+			this.head.yScale = (float) (1.025 + Math.sin((ageInTicks*0.125F / (pEntity.getRustLevel() + 1))) * 0.025);
 
-		this.head.yRot = -1 * 0.075F * Mth.cos(((0.5F * ageInTicks)/(pEntity.getRustLevel() + 1))/4);
+			this.head.yRot = -1 * 0.075F * Mth.cos(((0.5F * ageInTicks)/(pEntity.getRustLevel() + 1))/4);
+		}
+
 //		this.head.yRot += (float) (Math.cos((ageInTicks*360/2)/ (pEntity.getRustLevel() + 1))*5);
 
 		if (entity != null) {
