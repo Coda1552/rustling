@@ -22,5 +22,14 @@
   "block.rustling.rusticle": "Rusticle",
 
   "item.rustling.rustmuncher_spawn_egg": "Rustmuncher Spawn Egg",
-  "entity.rustling.rustmuncher": "Rustmuncher"
+  "entity.rustling.rustmuncher": "Rustmuncher",
+
+  "rustling.sound.subtitle.rustling_ambient": "Rustling idles",
+  "rustling.sound.subtitle.rustling_hurt": "Rustling hurts",
+  "rustling.sound.subtitle.rustling_death": "Rustling dies",
+  "rustling.sound.subtitle.rustling_shear": "Rustling is sheared",
+
+  "rustling.sound.subtitle.rustmuncher_ambient": "Rustmuncher idles",
+  "rustling.sound.subtitle.rustmuncher_hurt": "Rustmuncher hurts",
+  "rustling.sound.subtitle.rustmuncher_death": "Rustmuncher dies"
 }

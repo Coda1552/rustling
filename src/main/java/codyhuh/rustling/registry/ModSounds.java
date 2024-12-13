@@ -13,12 +13,12 @@ public class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS =
             DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, RustlingMod.MOD_ID);
 
-    public static final RegistryObject<SoundEvent> RUSTLING_IDLE = registerSoundEvents("rustling_idle");
+    public static final RegistryObject<SoundEvent> RUSTLING_IDLE = registerSoundEvents("rustling_ambient");
     public static final RegistryObject<SoundEvent> RUSTLING_HURT = registerSoundEvents("rustling_hurt");
     public static final RegistryObject<SoundEvent> RUSTLING_DEATH = registerSoundEvents("rustling_death");
     public static final RegistryObject<SoundEvent> RUSTLING_SHEAR = registerSoundEvents("rustling_shear");
 
-    public static final RegistryObject<SoundEvent> RUSTMUNCHER_IDLE = registerSoundEvents("rustmuncher_idle");
+    public static final RegistryObject<SoundEvent> RUSTMUNCHER_IDLE = registerSoundEvents("rustmuncher_ambient");
     public static final RegistryObject<SoundEvent> RUSTMUNCHER_HURT = registerSoundEvents("rustmuncher_hurt");
     public static final RegistryObject<SoundEvent> RUSTMUNCHER_DEATH = registerSoundEvents("rustmuncher_death");
 

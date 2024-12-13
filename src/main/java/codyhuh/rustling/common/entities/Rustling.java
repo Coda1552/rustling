@@ -180,6 +180,7 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
         if (rustling != null) {
             rustling.moveTo(this.position());
             rustling.setRustLevel(0);
+            rustling.setBreedingCooldown(20*60*20);
             this.level().addFreshEntity(rustling);
         }
 
