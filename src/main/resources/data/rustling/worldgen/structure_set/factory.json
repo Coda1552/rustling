@@ -1,0 +1,22 @@
+{
+  "structures": [
+    {
+      "structure": "rustling:factory",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    // The kind of placement to use. The other kind is ring based like strongholds use.
+    "type": "minecraft:random_spread",
+
+    // Make sure this is unique and does not match any other structure set's salt
+    "salt": 81802533,
+
+    // The average distance apart in chunks for spawn attempts
+    "spacing": 12,
+
+    // Minimum distance apart in chunks for spawn attempts
+    // MUST ALWAYS BE SMALLER THAN spacing ABOVE
+    "separation": 4
+  }
+}

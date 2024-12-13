@@ -1,0 +1,56 @@
+{
+  "name": "rustling:factory/start_hallway_pool",
+  "fallback": "minecraft:empty",
+  "elements": [
+
+    {
+      "weight": 2,
+      "element": {
+        "location": "rustling:factory/room/combat_mushroom",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+
+    {
+      "weight": 2,
+      "element": {
+        "location": "rustling:factory/room/combat_raw_iron",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+
+    {
+      "weight": 1,
+      "element": {
+        "location": "rustling:factory/room/treasure_raw_iron",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+
+    {
+      "weight": 3,
+      "element": {
+        "location": "rustling:factory/room/hall_north",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+
+    {
+      "weight": 3,
+      "element": {
+        "location": "rustling:factory/room/hall_west",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}
