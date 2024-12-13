@@ -29,6 +29,7 @@ public class RustlingMod {
         ModTabs.CREATIVE_MODE_TABS.register(bus);
         ModEffects.register(bus);
         ModPotions.register(bus);
+        ModSounds.register(bus);
 
         bus.addListener(this::createAttributes);
 

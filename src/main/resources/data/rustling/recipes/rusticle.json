@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "rustling:rust"
+    }
+  },
+  "pattern": [
+    "##",
+    "#"
+  ],
+  "result": {
+    "item": "rustling:rusticle",
+    "count": 3
+  }
+}

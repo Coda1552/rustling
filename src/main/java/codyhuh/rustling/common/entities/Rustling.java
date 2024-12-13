@@ -3,12 +3,14 @@ package codyhuh.rustling.common.entities;
 import codyhuh.rustling.registry.ModEffects;
 import codyhuh.rustling.registry.ModEntities;
 import codyhuh.rustling.registry.ModItems;
+import codyhuh.rustling.registry.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -40,9 +42,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Rustling extends Animal implements IForgeShearable, Shearable {
+
+    private static final EntityDataAccessor<Integer> BREEDING_COOLDOWN = SynchedEntityData.defineId(Rustling.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> RUST_LEVEL = SynchedEntityData.defineId(Rustling.class, EntityDataSerializers.INT);
+
     private int increaseRustTime;
     private int attackedByPlayerTime;
+    private int prevBreedingCooldown;
 
     public Rustling(EntityType<? extends Animal> type, Level level) {
         super(type, level);
@@ -75,6 +81,21 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(RUST_LEVEL, 0);
+        this.entityData.define(BREEDING_COOLDOWN, 0);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        this.setRustLevel(tag.getInt("RustLevel"));
+        this.setBreedingCooldown(tag.getInt("BreedingCooldown"));
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putInt("RustLevel", getRustLevel());
+        tag.putInt("BreedingCooldown", getBreedingCooldown());
     }
 
     public int getRustLevel() {
@@ -85,26 +106,28 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
         this.entityData.set(RUST_LEVEL, rustLevel);
     }
 
+    public int getBreedingCooldown() {
+        return this.entityData.get(BREEDING_COOLDOWN);
+    }
+
+    public void setBreedingCooldown(int breedingCooldown) {
+        this.entityData.set(BREEDING_COOLDOWN, breedingCooldown);
+    }
+
     public int getAttackedByPlayerTime(){
         return this.attackedByPlayerTime;
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        this.setRustLevel(tag.getInt("RustLevel"));
-    }
+    public void tick() {
 
-    @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putInt("RustLevel", getRustLevel());
-    }
+        if (this.getBreedingCooldown() > 0){
+            this.prevBreedingCooldown = this.getBreedingCooldown();
+            this.setBreedingCooldown(prevBreedingCooldown-1);
+        }
 
-//    @Override
-//    public void tick() {
-//        super.tick();
-//    }
+        super.tick();
+    }
 
     @Override
     public void aiStep() {
@@ -133,12 +156,13 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
 
-        if (itemstack.is(Items.GLOW_BERRIES)){
+        if (itemstack.is(Items.GLOW_BERRIES) && this.getBreedingCooldown() <= 0){
             this.duplicateRustling();
             this.level().broadcastEntityEvent(this, (byte)18);
             this.level().playSound(player, this, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.NEUTRAL, 2.0F, 1.0F);
 
             this.removeInteractionItem(player, itemstack);
+            this.setBreedingCooldown(20*60*20);
             return InteractionResult.SUCCESS;
         }
 
@@ -163,7 +187,7 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
 
     @Override
     public @NotNull List<ItemStack> onSheared(@Nullable Player player, @NotNull ItemStack item, Level level, BlockPos pos, int fortune) {
-        level.playSound(null, this, SoundEvents.AXE_SCRAPE, player == null ? SoundSource.BLOCKS : SoundSource.PLAYERS, 1.0F, 1.0F);
+        level.playSound(null, this, ModSounds.RUSTLING_SHEAR.get(), player == null ? SoundSource.BLOCKS : SoundSource.PLAYERS, 1.0F, 1.0F);
         this.gameEvent(GameEvent.SHEAR, player);
 
         List<ItemStack> items = new ArrayList<>(List.of());
@@ -188,7 +212,7 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
     @Override
     public void shear(SoundSource soundSource) {
 
-        this.level().playSound(null, this, SoundEvents.AXE_SCRAPE, soundSource, 1.0F, 1.0F);
+        this.level().playSound(null, this, ModSounds.RUSTLING_SHEAR.get(), soundSource, 1.0F, 1.0F);
 
         ItemEntity itementity = spawnAtLocation(new ItemStack(ModItems.RUST.get(), getRustLevel() * 2));
         if (itementity != null) {
@@ -207,5 +231,23 @@ public class Rustling extends Animal implements IForgeShearable, Shearable {
 
     public boolean canBeAffected(MobEffectInstance pPotioneffect) {
         return pPotioneffect.getEffect() == ModEffects.TETANUS.get() ? false : super.canBeAffected(pPotioneffect);
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getHurtSound(DamageSource pDamageSource) {
+        return ModSounds.RUSTLING_HURT.get();
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return ModSounds.RUSTLING_IDLE.get();
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getDeathSound() {
+        return ModSounds.RUSTLING_DEATH.get();
     }
 }
