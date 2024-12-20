@@ -1,0 +1,10 @@
+{
+  "itemGroup.rustling": "바스락거리는 소리",
+
+  "item.rustling.rust": "녹",
+  "item.rustling.rustling_spawn_egg": "바스락거리는 산란 알",
+
+  "entity.rustling.rustling": "바스락거리는 소리",
+
+  "block.rustling.rust_block": "녹의 블록"
+}
